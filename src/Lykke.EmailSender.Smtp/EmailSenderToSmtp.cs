@@ -8,20 +8,6 @@ using MimeKit.Text;
 namespace Lykke.EmailSender.Smtp
 {
 
-    public class EmailSenderToSmtpSettings
-    {
-        public string Host { get; set; }
-        public int Port { get; set; }
-
-        public string LocalDomain { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
-
-        public string DisplayName { get; set; }
-        public string From { get; set; }
-
-    }
-
     public class EmailSenderToSmtp : IEmailSender
     {
         private readonly EmailSenderToSmtpSettings _settings;
@@ -31,13 +17,22 @@ namespace Lykke.EmailSender.Smtp
             _settings = settings;
         }
 
-        public async Task SendEmailAsync(EmailModel model)
-        {
 
+        private MimeMessage CreateMimeMessage(EmailModel model)
+        {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_settings.DisplayName, _settings.From));
             emailMessage.To.Add(new MailboxAddress(string.Empty, model.Email));
             emailMessage.Subject = model.Subject;
+
+            return emailMessage;
+        }
+
+        public async Task SendEmailAsync(EmailModel model)
+        {
+
+            var emailMessage = CreateMimeMessage(model);
+
 
             var messageBody = new TextPart(model.IsHtml ? TextFormat.Html : TextFormat.Plain) { Text = model.Body };
 
