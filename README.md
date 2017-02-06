@@ -1,0 +1,1 @@
+# IEmailSender SMTP implementation
